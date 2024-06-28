@@ -1,6 +1,7 @@
 package com.vama.domain.usecase
 
 import com.vama.domain.model.Album
+import com.vama.domain.model.AlbumsFeed
 import com.vama.domain.model.Result
 import com.vama.domain.repository.AlbumRepository
 import io.mockk.MockKAnnotations
@@ -33,7 +34,7 @@ class GetAlbumsFeedUseCaseTest {
     fun `verify get albums feet return the top 100 music albums in the US on success`() {
         val albums = List(100) { album }
         getAlbumsFeedUseCaseTestSkeleton(
-            expectedResult = Result.Success(albums)
+            expectedResult = Result.Success(AlbumsFeed(feeds = albums, copyright = "Apple"))
         )
 
     }
@@ -45,7 +46,7 @@ class GetAlbumsFeedUseCaseTest {
         )
 
     private fun getAlbumsFeedUseCaseTestSkeleton(
-        expectedResult: Result<List<Album>>,
+        expectedResult: Result<AlbumsFeed>,
     ) = runTest {
         //Given
         coEvery { repository.getAlbumsFeed(any(), any()) } returns expectedResult

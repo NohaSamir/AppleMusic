@@ -7,6 +7,5 @@ data class Album(
     val artworkUrl: String,
     val releaseDate: String,
     val genres: List<Genre>,
-    val url: String,
-    val copyright: String
+    val url: String
 ) : DomainModel
