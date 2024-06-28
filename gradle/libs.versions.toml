@@ -57,3 +57,7 @@ remote-dependencies = [
     "retrofit-logging-interceptor",
     "hilt"
 ]
+
+data-dependencies = [
+    "hilt"
+]
