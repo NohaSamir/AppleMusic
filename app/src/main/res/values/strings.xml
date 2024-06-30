@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Apple Music</string>
+    <string name="artist_name">Artist name:</string>
+    <string name="release_date">Release Date:</string>
+    <string name="genre_name">Genre name:</string>
+    <string name="copyright">Copyright:</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="retry">Retry</string>
+    <string name="itunes_store">iTunes store</string>
 </resources>

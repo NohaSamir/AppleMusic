@@ -1,10 +1,12 @@
 [versions]
+adaptive = "1.0.0-beta04"
 agp = "8.5.0"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinStdlib = "2.0.0"
 kotlinxCoroutinesTest = "1.9.0-RC"
 lifecycleRuntimeKtx = "2.8.2"
 activityCompose = "1.9.0"
@@ -14,29 +16,45 @@ kspVersion = "2.0.0-1.0.21"
 mockk = "1.13.11"
 hiltVersion = "2.51.1"
 javaxInject = "1"
+hiltNavigationCompose = "1.2.0"
 retrofitVersion = "2.11.0"
 retrofitLoggingInterceptor = "4.12.0"
+kotlinx-collections-immutable = "0.3.5"
+coilCompose = "2.6.0"
+lottieVersion = "6.4.0"
+lifecycleRuntimeComposeAndroid = "2.8.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
+
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltVersion" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptive" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieVersion" }
+androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }
 retrofit-converter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion" }
 retrofit-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "retrofitLoggingInterceptor" }
@@ -51,6 +69,24 @@ hilt-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersio
 android-library = { id = "com.android.library", version.ref = "agp" }
 
 [bundles]
+app-dependencies = [
+    "hilt",
+    "androidx-hilt-navigation-compose",
+    "kotlinx-collections-immutable",
+    "androidx-core-ktx",
+    "androidx-lifecycle-runtime-ktx",
+    "androidx-activity-compose",
+    "androidx-compose-ui",
+    "androidx-compose-ui-graphics",
+    "androidx-ui-tooling-preview",
+    "androidx-material3",
+    "coil-compose",
+    "androidx-lifecycle-runtime-compose-android",
+    "androidx-adaptive-navigation",
+    "kotlin-stdlib",
+    "lottie"
+]
+
 remote-dependencies = [
     "retrofit",
     "retrofit-converter",
