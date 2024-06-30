@@ -2,7 +2,6 @@ package com.vama.data.repository
 
 import com.vama.data.mapper.remotemapper.AlbumsFeedsRemoteMapper.mapFromRemoteModel
 import com.vama.data.util.runSafeCatching
-import com.vama.domain.model.Album
 import com.vama.domain.model.AlbumsFeed
 import com.vama.domain.model.Result
 import com.vama.domain.repository.AlbumRepository
@@ -17,8 +16,4 @@ class AlbumRepositoryImpl @Inject constructor(
         runSafeCatching {
             albumService.getAlbumsFeed(country, pageSize).mapFromRemoteModel()
         }
-
-    override suspend fun getAlbum(id: String): Result<Album> {
-        TODO("Not yet implemented")
-    }
 }
