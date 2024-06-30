@@ -1,6 +1,5 @@
 package com.vama.domain.repository
 
-import com.vama.domain.model.Album
 import com.vama.domain.model.AlbumsFeed
 import com.vama.domain.model.Result
 
@@ -9,6 +8,4 @@ interface AlbumRepository {
         country: String,
         pageSize: Int
     ): Result<AlbumsFeed>
-
-    suspend fun getAlbum(id: String): Result<Album>
 }

@@ -31,7 +31,7 @@ class GetAlbumsFeedUseCaseTest {
     }
 
     @Test
-    fun `verify get albums feet return the top 100 music albums in the US on success`() {
+    fun `verify get albums feed return the top 100 music albums in the US on success`() {
         val albums = List(100) { album }
         getAlbumsFeedUseCaseTestSkeleton(
             expectedResult = Result.Success(AlbumsFeed(feeds = albums, copyright = "Apple"))
@@ -40,7 +40,7 @@ class GetAlbumsFeedUseCaseTest {
     }
 
     @Test
-    fun `verify get albums feet return error on failure`() =
+    fun `verify get albums feed return error on failure`() =
         getAlbumsFeedUseCaseTestSkeleton(
             expectedResult = Result.Error(IOException())
         )
