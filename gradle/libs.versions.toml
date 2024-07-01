@@ -23,11 +23,14 @@ kotlinx-collections-immutable = "0.3.5"
 coilCompose = "2.6.0"
 lottieVersion = "6.4.0"
 lifecycleRuntimeComposeAndroid = "2.8.2"
+realmDbVersion = "2.0.0"
+kotlinxCoroutinesVersion = "1.9.0-RC"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesVersion" }
 
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
@@ -58,6 +61,7 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }
 retrofit-converter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion" }
 retrofit-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "retrofitLoggingInterceptor" }
+realm-db = { group = "io.realm.kotlin", name = "library-base", version.ref = "realmDbVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -67,6 +71,7 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 hilt-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+realm-db-plugin = { id = "io.realm.kotlin", version.ref = "realmDbVersion" }
 
 [bundles]
 app-dependencies = [
