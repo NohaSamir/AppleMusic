@@ -2,10 +2,11 @@ package com.vama.domain.repository
 
 import com.vama.domain.model.AlbumsFeed
 import com.vama.domain.model.Result
+import kotlinx.coroutines.flow.Flow
 
 interface AlbumRepository {
-    suspend fun getAlbumsFeed(
+    suspend fun fetchAndUpdateMostPlayedAlbumsFeed(
         country: String,
         pageSize: Int
-    ): Result<AlbumsFeed>
+    ): Flow<Result<AlbumsFeed>>
 }

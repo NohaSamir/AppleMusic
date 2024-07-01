@@ -8,13 +8,15 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
-class GetAlbumsFeedUseCaseTest {
+class GetMostPlayedAlbumsInUSUseCaseTest {
 
     @MockK
     lateinit var repository: AlbumRepository
@@ -22,19 +24,21 @@ class GetAlbumsFeedUseCaseTest {
     @MockK
     lateinit var album: Album
 
-    private lateinit var getAlbumsFeedUseCase: GetAlbumsFeedUseCase
+    private lateinit var getMostPlayedAlbumsInUSUseCase: GetMostPlayedAlbumsInUSUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        getAlbumsFeedUseCase = GetAlbumsFeedUseCase(repository)
+        getMostPlayedAlbumsInUSUseCase = GetMostPlayedAlbumsInUSUseCase(repository)
     }
 
     @Test
     fun `verify get albums feed return the top 100 music albums in the US on success`() {
         val albums = List(100) { album }
         getAlbumsFeedUseCaseTestSkeleton(
-            expectedResult = Result.Success(AlbumsFeed(feeds = albums, copyright = "Apple"))
+            expectedResult = flow {
+                Result.Success(AlbumsFeed(feeds = albums, copyright = "Apple"))
+            }
         )
 
     }
@@ -42,21 +46,26 @@ class GetAlbumsFeedUseCaseTest {
     @Test
     fun `verify get albums feed return error on failure`() =
         getAlbumsFeedUseCaseTestSkeleton(
-            expectedResult = Result.Error(IOException())
+            expectedResult = flow { Result.Error(IOException()) }
         )
 
     private fun getAlbumsFeedUseCaseTestSkeleton(
-        expectedResult: Result<AlbumsFeed>,
+        expectedResult: Flow<Result<AlbumsFeed>>,
     ) = runTest {
         //Given
-        coEvery { repository.getAlbumsFeed(any(), any()) } returns expectedResult
+        coEvery {
+            repository.fetchAndUpdateMostPlayedAlbumsFeed(
+                any(),
+                any()
+            )
+        } returns expectedResult
 
         //When
-        val result = getAlbumsFeedUseCase()
+        val result = getMostPlayedAlbumsInUSUseCase()
 
         //Then
         coVerify {
-            repository.getAlbumsFeed("us", 100)
+            repository.fetchAndUpdateMostPlayedAlbumsFeed("us", 100)
         }
         assertEquals(/* expected = */ expectedResult, /* actual = */ result)
     }

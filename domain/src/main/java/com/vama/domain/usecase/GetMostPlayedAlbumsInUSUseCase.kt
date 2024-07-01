@@ -3,9 +3,10 @@ package com.vama.domain.usecase
 import com.vama.domain.model.AlbumsFeed
 import com.vama.domain.model.Result
 import com.vama.domain.repository.AlbumRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetAlbumsFeedUseCase @Inject constructor(
+class GetMostPlayedAlbumsInUSUseCase @Inject constructor(
     private val albumsRepository: AlbumRepository
 ) {
     companion object {
@@ -13,6 +14,9 @@ class GetAlbumsFeedUseCase @Inject constructor(
         const val COUNTRY = "us"
     }
 
-    suspend operator fun invoke(): Result<AlbumsFeed> =
-        albumsRepository.getAlbumsFeed(country = COUNTRY, pageSize = NUM_OF_ITEMS_TO_LOAD)
+    suspend operator fun invoke(): Flow<Result<AlbumsFeed>> =
+        albumsRepository.fetchAndUpdateMostPlayedAlbumsFeed(
+            country = COUNTRY,
+            pageSize = NUM_OF_ITEMS_TO_LOAD
+        )
 }

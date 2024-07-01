@@ -4,18 +4,19 @@ import androidx.lifecycle.viewModelScope
 import com.vama.applemusic.ui.mapper.AlbumsFeedDomainMapper.mapFromDomainModel
 import com.vama.applemusic.ui.util.ViewModelStateHandler
 import com.vama.domain.model.Result
-import com.vama.domain.usecase.GetAlbumsFeedUseCase
+import com.vama.domain.usecase.GetMostPlayedAlbumsInUSUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumsFeedViewModel @Inject constructor(
-    private val getAlbumsFeedUseCase: GetAlbumsFeedUseCase
+    private val getMostPlayedAlbumsInUSUseCase: GetMostPlayedAlbumsInUSUseCase
 ) : ViewModelStateHandler<AlbumsFeedUiState, AlbumsFeedUiIntent>() {
 
     init {
-        getAlbumsFeed()
+        getMostPlayedAlbumsFeed()
     }
 
     override fun createInitialState(): AlbumsFeedUiState {
@@ -28,18 +29,22 @@ class AlbumsFeedViewModel @Inject constructor(
                 setState {
                     AlbumsFeedUiState.Retrying
                 }
-                getAlbumsFeed()
+                getMostPlayedAlbumsFeed()
             }
         }
     }
 
-    private fun getAlbumsFeed() {
+    private fun getMostPlayedAlbumsFeed() {
         viewModelScope.launch {
-            val result = getAlbumsFeedUseCase()
-            setState {
-                when (result) {
-                    is Result.Success -> AlbumsFeedUiState.Success(result.data.mapFromDomainModel())
-                    is Result.Error -> AlbumsFeedUiState.Error(result.exception.message.orEmpty())
+            getMostPlayedAlbumsInUSUseCase().collectLatest { albumsFeed ->
+                setState {
+                    if (albumsFeed is Result.Success && albumsFeed.data.feeds.isNotEmpty()) {
+                        AlbumsFeedUiState.Success(albumsFeed.data.mapFromDomainModel())
+                    } else if (albumsFeed is Result.Error) {
+                        AlbumsFeedUiState.Error(albumsFeed.exception.message.orEmpty())
+                    } else {
+                        AlbumsFeedUiState.Error("")
+                    }
                 }
             }
         }

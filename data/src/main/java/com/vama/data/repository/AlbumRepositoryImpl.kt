@@ -1,19 +1,77 @@
 package com.vama.data.repository
 
+import com.vama.data.mapper.databasemapper.AlbumDatabaseMapper.mapFromDatabaseModel
+import com.vama.data.mapper.databasemapper.AlbumDatabaseMapper.mapToDatabaseModel
 import com.vama.data.mapper.remotemapper.AlbumsFeedsRemoteMapper.mapFromRemoteModel
-import com.vama.data.util.runSafeCatching
+import com.vama.database.dao.AlbumsDao
+import com.vama.domain.exceptions.CachedDataException
+import com.vama.domain.exceptions.NetworkException
 import com.vama.domain.model.AlbumsFeed
 import com.vama.domain.model.Result
 import com.vama.domain.repository.AlbumRepository
 import com.vama.remote.service.AlbumService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import javax.inject.Inject
 
 class AlbumRepositoryImpl @Inject constructor(
-    private val albumService: AlbumService
+    private val albumService: AlbumService,
+    private val albumsDao: AlbumsDao
 ) : AlbumRepository {
 
-    override suspend fun getAlbumsFeed(country: String, pageSize: Int): Result<AlbumsFeed> =
-        runSafeCatching {
-            albumService.getAlbumsFeed(country, pageSize).mapFromRemoteModel()
+    override suspend fun fetchAndUpdateMostPlayedAlbumsFeed(
+        country: String,
+        pageSize: Int
+    ): Flow<Result<AlbumsFeed>> = channelFlow {
+        fetchAlbumsFeed(
+            country = country,
+            pageSize = pageSize,
+            onSuccess = {
+                updateMostPlayedAlbumsDb(
+                    albumsFeed = it,
+                    onError = { errorMessage ->
+                        send(Result.Error(CachedDataException(errorMessage)))
+                    })
+            },
+            onError = { errorMessage ->
+                send(Result.Error(NetworkException(errorMessage)))
+            }
+        )
+        albumsDao.getMostPlayedAlbumsFeeds().collect { cachedAlbums ->
+            send(
+                Result.Success(
+                    AlbumsFeed(
+                        feeds = cachedAlbums.map { it.mapFromDatabaseModel() },
+                        copyright = ""
+                    )
+                )
+            )
         }
+    }
+
+    private suspend fun fetchAlbumsFeed(
+        country: String,
+        pageSize: Int,
+        onSuccess: suspend (albumsFeed: AlbumsFeed) -> Unit,
+        onError: suspend (String) -> Unit = {}
+    ) = runCatching {
+        albumService.getMostPlayedAlbumsFeed(country, pageSize)
+    }.onSuccess {
+        onSuccess(it.mapFromRemoteModel())
+    }.onFailure {
+        onError(it.message.orEmpty())
+    }
+
+    private suspend fun updateMostPlayedAlbumsDb(
+        albumsFeed: AlbumsFeed,
+        onError: suspend (String) -> Unit
+    ) = runCatching {
+        albumsDao.updateMostPlayedAlbums(
+            albumsFeed.feeds.map {
+                it.mapToDatabaseModel()
+            }
+        )
+    }.onFailure {
+        onError((it.message.orEmpty()))
+    }
 }

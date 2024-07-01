@@ -1,5 +1,4 @@
 plugins {
-    id("java-library")
     alias(libs.plugins.jetbrains.kotlin.jvm)
 }
 
@@ -10,6 +9,7 @@ java {
 
 dependencies {
     implementation(libs.javax.inject)
+    implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

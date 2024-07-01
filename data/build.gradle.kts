@@ -37,7 +37,10 @@ android {
 dependencies {
     api(project(":domain"))
     implementation(project(":remote"))
+    implementation(project(":cache"))
+
     implementation(libs.bundles.data.dependencies)
     ksp(libs.hilt.compiler)
+
     testImplementation(libs.junit)
 }

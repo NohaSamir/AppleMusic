@@ -43,11 +43,13 @@ fun LoadImage(
             }
 
             is AsyncImagePainter.State.Error -> {
-                Image(
-                    modifier = modifier,
-                    painter = painterResource(id = R.drawable.baseline_broken_image_24),
-                    contentDescription = "Error loading album poster"
-                )
+                Box(modifier = modifier.background(Color.LightGray)) {
+                    Image(
+                        modifier = modifier,
+                        painter = painterResource(id = R.drawable.baseline_broken_image_24),
+                        contentDescription = "Error loading album poster"
+                    )
+                }
             }
 
             else -> {
