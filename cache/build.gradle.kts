@@ -39,5 +39,6 @@ dependencies {
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
 
+    implementation(libs.androidx.datastore.preferences)
     api(libs.realm.db)
 }

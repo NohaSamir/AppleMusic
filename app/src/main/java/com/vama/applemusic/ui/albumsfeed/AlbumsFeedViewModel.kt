@@ -41,7 +41,11 @@ class AlbumsFeedViewModel @Inject constructor(
                     if (albumsFeed is Result.Success && albumsFeed.data.feeds.isNotEmpty()) {
                         AlbumsFeedUiState.Success(albumsFeed.data.mapFromDomainModel())
                     } else if (albumsFeed is Result.Error) {
-                        AlbumsFeedUiState.Error(albumsFeed.exception.message.orEmpty())
+                        if (this !is AlbumsFeedUiState.Success)
+                            AlbumsFeedUiState.Error(albumsFeed.exception.message.orEmpty())
+                        else {
+                            this
+                        }
                     } else {
                         AlbumsFeedUiState.Error("")
                     }

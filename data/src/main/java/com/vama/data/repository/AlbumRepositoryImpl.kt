@@ -4,6 +4,7 @@ import com.vama.data.mapper.databasemapper.AlbumDatabaseMapper.mapFromDatabaseMo
 import com.vama.data.mapper.databasemapper.AlbumDatabaseMapper.mapToDatabaseModel
 import com.vama.data.mapper.remotemapper.AlbumsFeedsRemoteMapper.mapFromRemoteModel
 import com.vama.database.dao.AlbumsDao
+import com.vama.database.datastore.AppSettingsPreferenceDataStore
 import com.vama.domain.exceptions.CachedDataException
 import com.vama.domain.exceptions.NetworkException
 import com.vama.domain.model.AlbumsFeed
@@ -16,35 +17,37 @@ import javax.inject.Inject
 
 class AlbumRepositoryImpl @Inject constructor(
     private val albumService: AlbumService,
-    private val albumsDao: AlbumsDao
+    private val albumsDao: AlbumsDao,
+    private val appSettingsPreferenceDataStore: AppSettingsPreferenceDataStore
 ) : AlbumRepository {
 
     override suspend fun fetchAndUpdateMostPlayedAlbumsFeed(
         country: String,
         pageSize: Int
     ): Flow<Result<AlbumsFeed>> = channelFlow {
-        fetchAlbumsFeed(
-            country = country,
-            pageSize = pageSize,
-            onSuccess = {
-                updateMostPlayedAlbumsDb(
-                    albumsFeed = it,
-                    onError = { errorMessage ->
-                        send(Result.Error(CachedDataException(errorMessage)))
-                    })
-            },
-            onError = { errorMessage ->
-                send(Result.Error(NetworkException(errorMessage)))
-            }
-        )
         albumsDao.getMostPlayedAlbumsFeeds().collect { cachedAlbums ->
             send(
                 Result.Success(
                     AlbumsFeed(
                         feeds = cachedAlbums.map { it.mapFromDatabaseModel() },
-                        copyright = ""
+                        copyright = appSettingsPreferenceDataStore.getAlbumsCopyright()
                     )
                 )
+            )
+            fetchAlbumsFeed(
+                country = country,
+                pageSize = pageSize,
+                onSuccess = {
+                    appSettingsPreferenceDataStore.saveAlbumsCopyright(it.copyright)
+                    updateMostPlayedAlbumsDb(
+                        albumsFeed = it,
+                        onError = { errorMessage ->
+                            send(Result.Error(CachedDataException(errorMessage)))
+                        })
+                },
+                onError = { errorMessage ->
+                    send(Result.Error(NetworkException(errorMessage)))
+                }
             )
         }
     }
