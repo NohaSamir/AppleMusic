@@ -21,3 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Apple Music"
 include(":app")
+include(":domain")
+include(":remote")
+include(":data")
+include(":cache")
