@@ -3,7 +3,7 @@
 
 
 ## Issue ticket number and link/ other resources
-https://vamachat.atlassian.net/browse/VAMA-NUM
+
 
 
 ## Screenshots (if applicable)
