@@ -28,6 +28,8 @@ jobs:
       - name: Auto set version number
         run: |
           CURRENT_VERSION=$(grep -m 1 -n versionName gradle/libs.versions.toml | cut -d = -f 2 | tr -d ' "')
+          echo "Current Version: $CURRENT_VERSION"
+          
           MAJOR=$(echo "$CURRENT_VERSION" | cut -d "." -f 1)
           MINOR=$(echo "$CURRENT_VERSION" | cut -d "." -f 2)
           PATCH=$(echo "$CURRENT_VERSION" | cut -d "." -f 3)
@@ -56,11 +58,7 @@ jobs:
 
       # Auto increment the current value of the version code by 1
       - name: Auto increment version code
-        run: |
-          currentVersionCode=$(awk -F '[= "]+' '/versionCode =/ {print $3}' gradle/libs.versions.toml)
-          newVersionCode=$((currentVersionCode + 1))
-          awk -F '\"' -v newVersionCode="$newVersionCode" '/versionCode =/ {gsub($2, newVersionCode)}1' OFS='\"' gradle/libs.versions.toml > tmp && mv tmp gradle/libs.versions.toml
-          echo "Updated versionCode from $currentVersionCode to $newVersionCode"
+        run: awk -F '\"' '/versionCode =/{gsub($2,$2+1)}1' OFS='\"' gradle/libs.versions.toml > tmp && mv tmp gradle/libs.versions.toml
 
       # Replaces the Version Name with the version name given to this workflow
       - name: Bump version name
