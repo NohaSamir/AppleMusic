@@ -8,7 +8,7 @@ name: "Finish release"
 on:
   pull_request:
     branches:
-      - main
+      - master
     types:
       - closed
       
@@ -48,14 +48,14 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_branch: main
+          source_branch: master
           destination_branch: development
-          pr_title: Merge Main Back Into Development
+          pr_title: Merge master Back Into Development
           pr_label: release
           pr_reviewer: ${{ github.event.pull_request.merged_by.login }} # By default, we request a review from the person who triggered the workflow.
           pr_assignee: ${{ github.event.pull_request.merged_by.login }}
           pr_body: |
-            This PR merges the main branch for release ${{ env.RELEASE_VERSION }} back into develop.
+            This PR merges the master branch for release ${{ env.RELEASE_VERSION }} back into develop.
             This happens to ensure that the updates that happened on the release branch, i.e. version code and version name updates are also present on development branch.
 
             **Note**: You shouldn't squash and merge this PR. Use a normal merge instead.
