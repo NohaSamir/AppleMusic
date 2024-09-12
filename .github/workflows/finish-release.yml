@@ -1,0 +1,58 @@
+name: "Finish release"
+
+# Controls when the action will run. 
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+      
+jobs:
+  release:
+    name: "Finish release"
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true # Only merged pull requests must trigger this job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract version from branch name (for release branches)
+        if: startsWith(github.event.pull_request.head.ref, 'release/')
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          VERSION=${BRANCH_NAME#release/}
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+      # For hotfix support later
+      - name: Extract version from branch name (for hotfix branches)
+        if: startsWith(github.event.pull_request.head.ref, 'hotfix/')
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          VERSION=${BRANCH_NAME#hotfix/}
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Create Release
+        uses: thomaseizinger/create-release@1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
+          tag_name: ${{ env.RELEASE_VERSION }}
+          name: ${{ env.RELEASE_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Create pull request
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: main
+          destination_branch: development
+          pr_title: Merge Main Back Into Development
+          pr_label: release
+          pr_reviewer: ${{ github.event.pull_request.merged_by.login }} # By default, we request a review from the person who triggered the workflow.
+          pr_assignee: ${{ github.event.pull_request.merged_by.login }}
+          pr_body: |
+            This PR merges the main branch for release ${{ env.RELEASE_VERSION }} back into develop.
+            This happens to ensure that the updates that happened on the release branch, i.e. version code and version name updates are also present on development branch.
+
+            **Note**: You shouldn't squash and merge this PR. Use a normal merge instead.
+            ===
