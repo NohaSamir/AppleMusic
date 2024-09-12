@@ -49,8 +49,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           source_branch: master
-          destination_branch: development
-          pr_title: Merge master Back Into Development
+          destination_branch: develop
+          pr_title: Merge master Back Into Develop
           pr_label: release
           pr_reviewer: ${{ github.event.pull_request.merged_by.login }} # By default, we request a review from the person who triggered the workflow.
           pr_assignee: ${{ github.event.pull_request.merged_by.login }}
