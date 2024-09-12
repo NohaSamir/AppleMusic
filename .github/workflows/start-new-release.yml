@@ -56,7 +56,11 @@ jobs:
 
       # Auto increment the current value of the version code by 1
       - name: Auto increment version code
-        run: awk -F '\"' '/versionCode =/{gsub($2,$2+1)}1' OFS='\"' gradle/libs.versions.toml > tmp && mv tmp gradle/libs.versions.toml
+        run: |
+          currentVersionCode=$(awk -F '[= "]+' '/versionCode =/ {print $3}' gradle/libs.versions.toml)
+          newVersionCode=$((currentVersionCode + 1))
+          awk -F '\"' -v newVersionCode="$newVersionCode" '/versionCode =/ {gsub($2, newVersionCode)}1' OFS='\"' gradle/libs.versions.toml > tmp && mv tmp gradle/libs.versions.toml
+          echo "Updated versionCode from $currentVersionCode to $newVersionCode"
 
       # Replaces the Version Name with the version name given to this workflow
       - name: Bump version name
