@@ -1,5 +1,6 @@
 permissions:
   contents: write
+  pull-requests: write
 
 name: Start a new release
 
