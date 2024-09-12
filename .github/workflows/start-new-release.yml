@@ -1,0 +1,90 @@
+name: Start a new release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        type: choice
+        description: Version Type
+        options:
+          - Minor
+          - Major
+          - Patch
+        required: true
+
+jobs:
+  start-new-release:
+    name: "Start a new release"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # This step will prepare the version number and store it as env var with this name ADJUSTED_VERSION
+      # to be accessed in following steps as env.ADJUSTED_VERSION..
+      - name: Auto set version number
+        run: |
+          CURRENT_VERSION=$(grep -m 1 -n versionName gradle/libs.versions.toml | cut -d = -f 2 | tr -d ' "')
+          MAJOR=$(echo "$CURRENT_VERSION" | cut -d "." -f 1)
+          MINOR=$(echo "$CURRENT_VERSION" | cut -d "." -f 2)
+          PATCH=$(echo "$CURRENT_VERSION" | cut -d "." -f 3)
+
+          if [ ${{ github.event.inputs.version_type }} == 'Major' ]; then
+            INCREMENTED_MAJOR=$(expr "$MAJOR" + 1)
+            NEW_VERSION="$INCREMENTED_MAJOR.0.0"
+          elif [ ${{ github.event.inputs.version_type }} == 'Minor' ]; then
+            INCREMENTED_MINOR=$(expr "$MINOR" + 1)
+            NEW_VERSION="$MAJOR.$INCREMENTED_MINOR.0"
+          else
+            INCREMENTED_PATCH=$(expr "$PATCH" + 1)
+            NEW_VERSION="$MAJOR.$MINOR.$INCREMENTED_PATCH"
+          fi
+
+          echo "ADJUSTED_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Create release branch
+        run: git checkout -b release/${{ env.ADJUSTED_VERSION }}
+
+      # In order to make a commit, we need to initialize a user.
+      - name: Initialize mandatory git config
+        run: |
+          git config user.name "Release Bot"
+          git config user.email eng.nohasamirsaad@gmail.com
+
+      # Auto increment the current value of the version code by 1
+      - name: Auto increment version code
+        run: awk -F '\"' '/versionCode =/{gsub($2,$2+1)}1' OFS='\"' gradle/libs.versions.toml > tmp && mv tmp gradle/libs.versions.toml
+
+      # Replaces the Version Name with the version name given to this workflow
+      - name: Bump version name
+        run: sed -i'' 's/versionName =.*/versionName = \"${{ env.ADJUSTED_VERSION }}\"/' gradle/libs.versions.toml
+
+      - name: Commit changes
+        id: make-version-commit
+        run: |
+          git add .
+          git commit --message "Update VersionName to: ${{ env.ADJUSTED_VERSION }}, and bump the database version and version code."
+          echo "::set-output name=commit::$(git rev-parse HEAD)"
+
+      - name: Push release branch
+        run: git push origin release/${{ env.ADJUSTED_VERSION }}
+
+      - name: Create pull request
+        id: create-pull-request
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: release/${{ env.ADJUSTED_VERSION }}
+          destination_branch: main
+          pr_title: Release ${{ env.ADJUSTED_VERSION }}
+          pr_reviewer: ${{ github.actor }} # By default, we request a review from the person who triggered the workflow.
+          pr_assignee: ${{ github.actor }}
+          pr_label: release
+          pr_body: |
+            Hi @${{ github.actor }}
+            This PR was created in response to the release workflow for release version: ${{ env.ADJUSTED_VERSION }}
+            - I've auto incremented the app version code and updated the version name in this commit: ${{ steps.make-version-commit.outputs.commit }}
+
+            Merging this PR will create a GitHub release (Tag) and complete the release flow.
+
+            **Note:** You shouldn't squash and merge this PR. Use a normal merge instead.
+            ===
