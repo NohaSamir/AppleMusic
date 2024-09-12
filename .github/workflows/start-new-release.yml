@@ -63,7 +63,7 @@ jobs:
         run: |
           git add .
           git commit --message "Update VersionName to: ${{ env.ADJUSTED_VERSION }}, and bump the database version and version code."
-          echo "::set-output name=commit::$(git rev-parse HEAD)"
+          echo "name=commit::$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Push release branch
         run: git push origin release/${{ env.ADJUSTED_VERSION }}
