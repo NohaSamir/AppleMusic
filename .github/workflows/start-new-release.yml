@@ -1,3 +1,7 @@
+permissions:
+  contents: write
+  pull-requests: write
+
 name: Start a new release
 
 on:
@@ -63,7 +67,7 @@ jobs:
         run: |
           git add .
           git commit --message "Update VersionName to: ${{ env.ADJUSTED_VERSION }}, and bump the database version and version code."
-          echo "::set-output name=commit::$(git rev-parse HEAD)"
+          echo "name=commit::$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Push release branch
         run: git push origin release/${{ env.ADJUSTED_VERSION }}
@@ -74,7 +78,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           source_branch: release/${{ env.ADJUSTED_VERSION }}
-          destination_branch: main
+          destination_branch: master
           pr_title: Release ${{ env.ADJUSTED_VERSION }}
           pr_reviewer: ${{ github.actor }} # By default, we request a review from the person who triggered the workflow.
           pr_assignee: ${{ github.actor }}
