@@ -17,7 +17,7 @@ jobs:
     name: "Start a new release"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       # This step will prepare the version number and store it as env var with this name ADJUSTED_VERSION
       # to be accessed in following steps as env.ADJUSTED_VERSION..
