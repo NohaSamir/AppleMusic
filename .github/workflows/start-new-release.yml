@@ -19,11 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug Current Version
-        run: |
-          CURRENT_VERSION=$(grep -m 1 -n versionName gradle/libs.versions.toml | cut -d = -f 2 | tr -d ' "')
-          echo "Current Version: $CURRENT_VERSION"
-
       # This step will prepare the version number and store it as env var with this name ADJUSTED_VERSION
       # to be accessed in following steps as env.ADJUSTED_VERSION..
       - name: Auto set version number
